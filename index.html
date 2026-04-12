@@ -18,207 +18,197 @@
     }
 
     header {
-      padding: 2rem 1.5rem 1.5rem;
+      padding: 1.25rem 1.5rem;
       border-bottom: 1px solid #1e2330;
       display: flex;
       align-items: baseline;
       gap: 1.5rem;
+      flex-shrink: 0;
     }
-    header h1 {
-      font-size: 1.5rem;
-      font-weight: 400;
-      letter-spacing: 0.04em;
-      color: #f0ebe0;
-    }
-    header p {
-      font-size: 0.82rem;
-      color: #5a6070;
-      font-family: 'Courier New', monospace;
-      letter-spacing: 0.02em;
-    }
+    header h1 { font-size: 1.4rem; font-weight: 400; letter-spacing: 0.04em; color: #f0ebe0; }
+    header p { font-size: 0.78rem; color: #5a6070; font-family: 'Courier New', monospace; }
 
+    /* Three-column layout: sidebar | photo | map */
     main {
       flex: 1;
       display: grid;
-      grid-template-columns: 340px 1fr;
-      gap: 0;
+      grid-template-columns: 260px 1fr 1fr;
       min-height: 0;
+      overflow: hidden;
     }
 
+    /* ── Sidebar ── */
     .sidebar {
-      padding: 1.5rem;
+      padding: 1.25rem;
       border-right: 1px solid #1e2330;
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: 1.1rem;
       overflow-y: auto;
     }
 
     .section-label {
       font-family: 'Courier New', monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.12em;
-      color: #3d4455;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.55rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
+    .dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot.gold { background: #c8a96e; box-shadow: 0 0 0 3px #c8a96e33; }
+    .dot.blue { background: #5a9fd4; box-shadow: 0 0 0 3px #5a9fd433; }
+
+    .loc-card {
+      border-radius: 8px;
+      padding: 0.9rem;
+      border: 1px solid;
+    }
+    .loc-card.target { background: #100e0a; border-color: #c8a96e44; }
+    .loc-card.target .section-label { color: #c8a96e; }
+    .loc-card.photo { background: #090d14; border-color: #5a9fd444; }
+    .loc-card.photo .section-label { color: #5a9fd4; }
+
+    .loc-name { font-size: 0.95rem; color: #f0ebe0; margin-bottom: 0.35rem; }
+    .loc-coords { font-family: 'Courier New', monospace; font-size: 0.75rem; color: #6a7080; line-height: 1.75; }
+
+    /* Upload zone — compact strip */
     .upload-zone {
       border: 1px dashed #2a3040;
       border-radius: 8px;
-      padding: 1.5rem;
-      text-align: center;
+      padding: 0.55rem 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
       cursor: pointer;
       transition: border-color 0.2s, background 0.2s;
       position: relative;
       background: #0f1218;
     }
-    .upload-zone:hover {
-      border-color: #c8a96e;
-      background: #12151c;
-    }
-    .upload-zone.drag-over {
-      border-color: #c8a96e;
-      background: #15180f;
-    }
-    .upload-zone input {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
-    }
-    .upload-icon {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-      color: #3d4455;
-    }
-    .upload-zone p {
-      font-size: 0.82rem;
-      color: #5a6070;
-      line-height: 1.5;
-    }
-    .upload-zone strong {
-      display: block;
-      color: #8a9090;
-      font-size: 0.9rem;
-      margin-bottom: 0.25rem;
-      font-weight: 400;
-    }
+    .upload-zone:hover { border-color: #5a9fd4; background: #0a0e14; }
+    .upload-zone.drag-over { border-color: #5a9fd4; }
+    .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .upload-zone .icon { font-size: 1rem; color: #3d4455; flex-shrink: 0; }
+    .upload-zone strong { color: #8a9090; font-size: 0.78rem; font-weight: 400; white-space: nowrap; }
+    .upload-zone p { font-size: 0.66rem; color: #4a5060; line-height: 1.3; margin: 0; }
 
     .tip-box {
-      background: #0f1218;
-      border: 1px solid #1e2330;
       border-left: 2px solid #c8a96e;
-      border-radius: 4px;
-      padding: 0.75rem 1rem;
-      font-size: 0.78rem;
-      color: #5a6070;
-      line-height: 1.6;
-      font-family: 'Courier New', monospace;
-    }
-    .tip-box b {
-      color: #c8a96e;
-      font-weight: 400;
-    }
-
-    .coord-block {
-      background: #0f1218;
-      border: 1px solid #1e2330;
-      border-radius: 6px;
-      padding: 1rem;
-    }
-    .coord-block .label {
-      font-family: 'Courier New', monospace;
+      border-radius: 0 4px 4px 0;
+      padding: 0.5rem 0.75rem;
       font-size: 0.68rem;
-      letter-spacing: 0.1em;
-      color: #3d4455;
-      text-transform: uppercase;
-      margin-bottom: 0.5rem;
-    }
-    .coord-block .value {
+      color: #5a6070;
+      line-height: 1.55;
       font-family: 'Courier New', monospace;
-      font-size: 0.85rem;
-      color: #8a9090;
-      line-height: 1.7;
     }
-    .coord-block .value.highlight {
-      color: #c8a96e;
-    }
+    .tip-box b { color: #c8a96e; font-weight: 400; }
 
     .distance-display {
       background: #0f1218;
       border: 1px solid #2a3040;
-      border-radius: 6px;
-      padding: 1.25rem;
-      text-align: center;
+      border-radius: 8px;
+      padding: 0.9rem 1.1rem;
+      display: flex;
+      align-items: baseline;
+      gap: 0.6rem;
     }
-    .distance-display .big-number {
-      font-size: 2.4rem;
-      font-weight: 400;
-      color: #f0ebe0;
-      letter-spacing: -0.02em;
-      line-height: 1;
-    }
-    .distance-display .unit {
-      font-family: 'Courier New', monospace;
-      font-size: 0.75rem;
-      color: #5a6070;
-      margin-top: 0.35rem;
-      letter-spacing: 0.1em;
-    }
-    .distance-display .miles {
-      font-family: 'Courier New', monospace;
-      font-size: 0.8rem;
-      color: #3d4455;
-      margin-top: 0.2rem;
-    }
+    .dist-num { font-size: 2rem; font-weight: 400; color: #f0ebe0; letter-spacing: -0.02em; line-height: 1; }
+    .dist-meta { display: flex; flex-direction: column; gap: 2px; }
+    .dist-unit { font-family: 'Courier New', monospace; font-size: 0.62rem; letter-spacing: 0.12em; color: #5a6070; }
+    .dist-mi { font-family: 'Courier New', monospace; font-size: 0.68rem; color: #3d4455; }
 
-    .status-msg {
-      font-family: 'Courier New', monospace;
-      font-size: 0.78rem;
-      color: #5a6070;
-      padding: 0.5rem 0;
-      min-height: 1.5rem;
-    }
+    .status-msg { font-family: 'Courier New', monospace; font-size: 0.68rem; color: #5a6070; min-height: 1rem; }
     .status-msg.error { color: #a05050; }
-    .status-msg.success { color: #6a9a6a; }
+    .status-msg.success { color: #5a9a6a; }
     .status-msg.loading { color: #c8a96e; }
 
-    #map-container {
+    /* ── Photo panel — middle column, fully unconstrained ── */
+    #photo-panel {
+      border-right: 1px solid #1e2330;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;        /* scrolls if photo is very tall */
+      background: #090d10;
+    }
+
+    #photoPlaceholder {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 0.75rem;
+      color: #2a3040;
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      padding: 2rem;
+      text-align: center;
+    }
+    #photoPlaceholder .big-icon { font-size: 2.5rem; opacity: 0.4; }
+
+    #photoPreviewWrap {
+      display: none;
       position: relative;
+      flex-direction: column;
     }
-    #map {
+    /* The image is completely unconstrained — shows at its natural aspect ratio */
+    #photoPreview {
       width: 100%;
-      height: 100%;
-      min-height: 500px;
+      height: auto;
+      display: block;
     }
+    #photoPreviewBadge {
+      position: absolute;
+      top: 10px; left: 10px;
+      background: #5a9fd4;
+      color: #020810;
+      font-family: 'Courier New', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+
+    /* ── Map panel — right column ── */
+    #map-container { position: relative; }
+    #map { width: 100%; height: 100%; min-height: 400px; }
 
     .leaflet-popup-content-wrapper {
-      background: #0d0f14;
-      color: #e8e4dc;
-      border: 1px solid #2a3040;
-      border-radius: 6px;
-      box-shadow: none;
-      font-family: 'Courier New', monospace;
-      font-size: 0.78rem;
+      background: #0d0f14 !important; color: #e8e4dc !important;
+      border: 1px solid #2a3040 !important; border-radius: 6px !important;
+      box-shadow: none !important; font-family: 'Courier New', monospace !important; font-size: 0.75rem !important;
     }
-    .leaflet-popup-tip { background: #0d0f14; }
+    .leaflet-popup-tip { background: #0d0f14 !important; }
+    .leaflet-popup-content { margin: 10px 13px !important; line-height: 1.8 !important; }
+
+    #map-legend {
+      position: absolute; bottom: 20px; left: 12px; z-index: 1000;
+      background: #0d0f14ee; border: 1px solid #2a3040; border-radius: 6px;
+      padding: 0.6rem 0.85rem; font-family: 'Courier New', monospace; font-size: 0.7rem;
+      color: #8a9090; display: flex; flex-direction: column; gap: 6px;
+    }
+    .legend-row { display: flex; align-items: center; gap: 8px; }
 
     footer {
-      padding: 0.75rem 1.5rem;
-      border-top: 1px solid #1e2330;
-      font-family: 'Courier New', monospace;
-      font-size: 0.7rem;
-      color: #2a3040;
-      display: flex;
-      justify-content: space-between;
+      padding: 0.6rem 1.5rem; border-top: 1px solid #1e2330;
+      font-family: 'Courier New', monospace; font-size: 0.65rem; color: #2a3040;
+      display: flex; justify-content: space-between; flex-shrink: 0;
     }
 
-    @media (max-width: 700px) {
-      main { grid-template-columns: 1fr; }
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; grid-template-rows: auto auto auto; overflow: visible; }
       .sidebar { border-right: none; border-bottom: 1px solid #1e2330; }
+      #photo-panel { border-right: none; border-bottom: 1px solid #1e2330; min-height: 200px; }
       #map { min-height: 350px; }
     }
   </style>
@@ -227,336 +217,252 @@
 
 <header>
   <h1>GeoGuesser</h1>
-  <p>Upload a photo → compare GPS location with target</p>
+  <p>Upload a photo → measure distance to target</p>
 </header>
 
 <main>
+
+  <!-- Sidebar: controls & info -->
   <aside class="sidebar">
 
-    <div>
-      <div class="section-label">Target</div>
-      <div class="coord-block">
-        <div class="label">Location name</div>
-        <div class="value highlight" id="targetName">Statue of Liberty</div>
-        <div class="label" style="margin-top:0.75rem;">Coordinates</div>
-        <div class="value" id="targetCoords">40.689249° N<br>74.044500° W</div>
-      </div>
+    <div class="loc-card target">
+      <div class="section-label"><span class="dot gold"></span>Target location</div>
+      <div class="loc-name">Statue of Liberty</div>
+      <div class="loc-coords">40.689249° N<br>74.044500° W</div>
     </div>
 
     <div>
-      <div class="section-label">Upload photo</div>
+      <div class="section-label" style="color:#3d4455;">Upload your photo</div>
       <div class="upload-zone" id="uploadZone">
         <input type="file" id="photoInput" accept="image/*,.heic,.heif" />
-        <div class="upload-icon">⊕</div>
-        <strong>Drop photo here</strong>
-        <p>iPhone JPEG or HEIC with GPS location enabled</p>
+        <div class="icon">⊕</div>
+        <div>
+          <strong>Tap or drop a photo</strong>
+          <p>JPEG or HEIC with GPS enabled</p>
+        </div>
       </div>
-      <div class="tip-box" style="margin-top:0.75rem;">
-        <b>Note:</b> Use JPEG photos from your Camera Roll. iOS strips GPS from PNGs and screenshots. In Photos → Share → select image without compression for best results.
+      <div class="tip-box" style="margin-top:0.5rem;">
+        <b>Tip:</b> Use JPEG from Camera Roll. PNGs &amp; screenshots have no GPS.
       </div>
-      <div class="status-msg" id="statusMsg">Waiting for photo…</div>
+      <div class="status-msg" id="statusMsg" style="margin-top:0.45rem;">Ready — upload a photo.</div>
     </div>
 
-    <div>
-      <div class="section-label">Photo location</div>
-      <div class="coord-block">
-        <div class="value" id="photoCoords" style="color:#3d4455;">No photo loaded yet.</div>
-      </div>
+    <div class="loc-card photo" id="photoCard" style="display:none;">
+      <div class="section-label"><span class="dot blue"></span>Your photo location</div>
+      <div class="loc-coords" id="photoCoords" style="color:#a0b8cc;"></div>
     </div>
 
-    <div>
-      <div class="section-label">Distance</div>
-      <div class="distance-display" id="distanceDisplay">
-        <div class="big-number" id="distKm">—</div>
-        <div class="unit">KILOMETRES</div>
-        <div class="miles" id="distMi">—</div>
+    <div id="distanceWrap" style="display:none;">
+      <div class="section-label" style="color:#3d4455;">Distance to target</div>
+      <div class="distance-display">
+        <div class="dist-num" id="distKm">—</div>
+        <div class="dist-meta">
+          <div class="dist-unit" id="distUnit">KM</div>
+          <div class="dist-mi" id="distMi"></div>
+        </div>
       </div>
     </div>
 
   </aside>
 
+  <!-- Photo panel: full uncropped image -->
+  <div id="photo-panel">
+    <div id="photoPlaceholder">
+      <div class="big-icon">⬚</div>
+      <span>Your photo will appear here</span>
+    </div>
+    <div id="photoPreviewWrap">
+      <img id="photoPreview" alt="Uploaded photo" />
+      <div id="photoPreviewBadge">Your photo</div>
+    </div>
+  </div>
+
+  <!-- Map panel -->
   <div id="map-container">
     <div id="map"></div>
+    <div id="map-legend">
+      <div class="legend-row"><span class="dot gold" style="width:11px;height:11px;"></span>Target — Statue of Liberty</div>
+      <div class="legend-row" id="legendPhotoRow" style="display:none;"><span class="dot blue" style="width:11px;height:11px;"></span>Your photo location</div>
+    </div>
   </div>
+
 </main>
 
 <footer>
-  <span>OpenStreetMap contributors</span>
-  <span>GPS parsed via exifr</span>
+  <span>Map: OpenStreetMap contributors</span>
+  <span>GPS: exifr library</span>
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.umd.min.js"></script>
 <script>
 const TARGET = { name: 'Statue of Liberty', lat: 40.689249, lng: -74.044500 };
-
 let map, targetMarker, photoMarker, distLine;
+
+function mkIcon(color, size) {
+  return L.divIcon({
+    className: '',
+    html: `<div style="width:${size}px;height:${size}px;background:${color};border:2.5px solid #0d0f14;border-radius:50%;box-shadow:0 0 0 4px ${color}44;"></div>`,
+    iconSize: [size,size], iconAnchor: [size/2,size/2], popupAnchor: [0,-size/2]
+  });
+}
 
 function initMap() {
   map = L.map('map', { center: [TARGET.lat, TARGET.lng], zoom: 4, minZoom: 2 });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; OpenStreetMap contributors'
+    maxZoom: 19, attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
-
-  const greenIcon = L.divIcon({
-    className: '',
-    html: '<div style="width:14px;height:14px;background:#c8a96e;border:2px solid #0d0f14;border-radius:50%;"></div>',
-    iconSize: [14, 14], iconAnchor: [7, 7]
-  });
-  targetMarker = L.marker([TARGET.lat, TARGET.lng], { icon: greenIcon })
+  targetMarker = L.marker([TARGET.lat, TARGET.lng], { icon: mkIcon('#c8a96e', 18) })
     .addTo(map)
-    .bindPopup(`<b>${TARGET.name}</b><br>${TARGET.lat.toFixed(6)}° N<br>${Math.abs(TARGET.lng).toFixed(6)}° W`);
+    .bindPopup(`<b style="color:#c8a96e;">TARGET</b><br>${TARGET.name}<br>${TARGET.lat.toFixed(6)}° N, ${Math.abs(TARGET.lng).toFixed(6)}° W`);
 }
 
-function setStatus(msg, type = '') {
+function setStatus(msg, type='') {
   const el = document.getElementById('statusMsg');
-  el.textContent = msg;
-  el.className = 'status-msg ' + type;
+  el.textContent = msg; el.className = 'status-msg ' + type;
 }
 
-function haversineKm(lat1, lng1, lat2, lng2) {
-  const R = 6371;
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLng = (lng2 - lng1) * Math.PI / 180;
-  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+function haversineKm(lat1,lng1,lat2,lng2) {
+  const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function showPhotoPreview(file) {
+  const url = URL.createObjectURL(file);
+  const img = document.getElementById('photoPreview');
+  img.onload = () => URL.revokeObjectURL(url);
+  img.src = url;
+  document.getElementById('photoPlaceholder').style.display = 'none';
+  const wrap = document.getElementById('photoPreviewWrap');
+  wrap.style.display = 'flex';
 }
 
 function renderPhoto(lat, lng) {
-  document.getElementById('photoCoords').innerHTML =
-    `<span style="color:#e8e4dc;">${lat.toFixed(6)}° ${lat>=0?'N':'S'}</span><br><span style="color:#e8e4dc;">${Math.abs(lng).toFixed(6)}° ${lng>=0?'E':'W'}</span>`;
+  const latStr = `${Math.abs(lat).toFixed(6)}° ${lat>=0?'N':'S'}`;
+  const lngStr = `${Math.abs(lng).toFixed(6)}° ${lng>=0?'E':'W'}`;
+  document.getElementById('photoCoords').innerHTML = `${latStr}<br>${lngStr}`;
+  document.getElementById('photoCard').style.display = 'block';
 
-  const blueIcon = L.divIcon({
-    className: '',
-    html: '<div style="width:14px;height:14px;background:#5a9fd4;border:2px solid #0d0f14;border-radius:50%;"></div>',
-    iconSize: [14, 14], iconAnchor: [7, 7]
-  });
+  if (photoMarker) photoMarker.setLatLng([lat,lng]);
+  else photoMarker = L.marker([lat,lng], { icon: mkIcon('#5a9fd4',18) })
+    .addTo(map)
+    .bindPopup(`<b style="color:#5a9fd4;">YOUR PHOTO</b><br>${latStr}<br>${lngStr}`);
+  photoMarker.openPopup();
 
-  if (photoMarker) { photoMarker.setLatLng([lat, lng]); } else {
-    photoMarker = L.marker([lat, lng], { icon: blueIcon })
-      .addTo(map)
-      .bindPopup(`<b>Photo location</b><br>${lat.toFixed(6)}°<br>${lng.toFixed(6)}°`);
-  }
-
-  if (distLine) { distLine.setLatLngs([[TARGET.lat, TARGET.lng],[lat,lng]]); } else {
-    distLine = L.polyline([[TARGET.lat, TARGET.lng],[lat,lng]], {
-      color: '#c8a96e', weight: 2, opacity: 0.7, dashArray: '6,5'
-    }).addTo(map);
-  }
+  if (distLine) distLine.setLatLngs([[TARGET.lat,TARGET.lng],[lat,lng]]);
+  else distLine = L.polyline([[TARGET.lat,TARGET.lng],[lat,lng]], { color:'#c8a96e', weight:2, opacity:0.65, dashArray:'7,5' }).addTo(map);
 
   const km = haversineKm(TARGET.lat, TARGET.lng, lat, lng);
-  document.getElementById('distKm').textContent = km < 1 ? (km * 1000).toFixed(0) + ' m' : km.toFixed(1);
-  if (km >= 1) {
-    document.getElementById('distMi').textContent = (km * 0.621371).toFixed(1) + ' miles';
+  if (km < 1) {
+    document.getElementById('distKm').textContent = (km*1000).toFixed(0);
+    document.getElementById('distUnit').textContent = 'METRES';
+    document.getElementById('distMi').textContent = (km*1000*3.28084).toFixed(0) + ' ft';
   } else {
-    document.getElementById('distMi').textContent = (km * 1000 * 3.28084).toFixed(0) + ' feet';
+    document.getElementById('distKm').textContent = km.toFixed(1);
+    document.getElementById('distUnit').textContent = 'KM';
+    document.getElementById('distMi').textContent = (km*0.621371).toFixed(1) + ' miles';
   }
-
-  map.fitBounds(L.latLngBounds([[TARGET.lat, TARGET.lng],[lat,lng]]).pad(0.2));
-  setStatus('GPS location found.', 'success');
+  document.getElementById('distanceWrap').style.display = 'block';
+  document.getElementById('legendPhotoRow').style.display = 'flex';
+  map.fitBounds(L.latLngBounds([[TARGET.lat,TARGET.lng],[lat,lng]]).pad(0.22));
+  setStatus('GPS found — locations plotted.', 'success');
 }
 
-function showNoGps() {
-  document.getElementById('photoCoords').textContent = 'No GPS data found.';
-  document.getElementById('distKm').textContent = '—';
-  document.getElementById('distMi').textContent = '—';
+function showNoGps(file) {
+  document.getElementById('photoCard').style.display = 'none';
+  document.getElementById('distanceWrap').style.display = 'none';
+  document.getElementById('legendPhotoRow').style.display = 'none';
   if (photoMarker) { map.removeLayer(photoMarker); photoMarker = null; }
   if (distLine) { map.removeLayer(distLine); distLine = null; }
-}
-
-async function parseGPS(file) {
-  // Strategy 1: exifr with explicit GPS options (works best for HEIC)
-  try {
-    const opts = {
-      gps: true,
-      tiff: true,
-      exif: true,
-      icc: false,
-      iptc: false,
-      xmp: false,
-      translateValues: true,
-      reviveValues: true,
-      sanitize: true,
-    };
-    const parsed = await exifr.parse(file, opts);
-    if (parsed && typeof parsed.latitude === 'number' && typeof parsed.longitude === 'number') {
-      return { lat: parsed.latitude, lng: parsed.longitude };
-    }
-    // Check alternate keys exifr sometimes uses
-    if (parsed) {
-      const latKeys = ['GPSLatitude', 'latitude', 'Latitude'];
-      const lngKeys = ['GPSLongitude', 'longitude', 'Longitude'];
-      const latRefKeys = ['GPSLatitudeRef', 'latitudeRef'];
-      const lngRefKeys = ['GPSLongitudeRef', 'longitudeRef'];
-
-      let lat = null, lng = null, latRef = 'N', lngRef = 'E';
-      for (const k of latKeys) { if (parsed[k] != null) { lat = parsed[k]; break; } }
-      for (const k of lngKeys) { if (parsed[k] != null) { lng = parsed[k]; break; } }
-      for (const k of latRefKeys) { if (parsed[k] != null) { latRef = parsed[k]; break; } }
-      for (const k of lngRefKeys) { if (parsed[k] != null) { lngRef = parsed[k]; break; } }
-
-      if (lat != null && lng != null) {
-        lat = dmsToDecimal(lat);
-        lng = dmsToDecimal(lng);
-        if (latRef === 'S') lat = -Math.abs(lat);
-        if (lngRef === 'W') lng = -Math.abs(lng);
-        if (typeof lat === 'number' && typeof lng === 'number') return { lat, lng };
-      }
-    }
-  } catch(e) { console.warn('exifr parse attempt 1 failed:', e); }
-
-  // Strategy 2: exifr.gps() shortcut
-  try {
-    const gps = await exifr.gps(file);
-    if (gps && typeof gps.latitude === 'number' && typeof gps.longitude === 'number') {
-      return { lat: gps.latitude, lng: gps.longitude };
-    }
-  } catch(e) { console.warn('exifr.gps() failed:', e); }
-
-  // Strategy 3: Manual ArrayBuffer scan for GPS IFD bytes
-  try {
-    const result = await manualExifScan(file);
-    if (result) return result;
-  } catch(e) { console.warn('Manual scan failed:', e); }
-
-  return null;
+  const n = (file.name||'').toLowerCase();
+  if (n.endsWith('.png')) setStatus('PNGs have no GPS. Share as JPEG from Photos.', 'error');
+  else if (n.endsWith('.heic')||n.endsWith('.heif')) setStatus('No GPS in HEIC. Try exporting as JPEG.', 'error');
+  else setStatus('No GPS metadata found. Check Location Services.', 'error');
 }
 
 function dmsToDecimal(val) {
-  if (typeof val === 'number') return val;
-  if (Array.isArray(val)) {
-    if (val.length === 3) {
-      return Number(val[0]) + Number(val[1]) / 60 + Number(val[2]) / 3600;
-    }
-    if (val.length === 1) return dmsToDecimal(val[0]);
-  }
-  if (typeof val === 'string') {
-    const n = parseFloat(val);
-    return isNaN(n) ? null : n;
-  }
+  if (typeof val==='number') return val;
+  if (Array.isArray(val)&&val.length===3) return +val[0]+ +val[1]/60+ +val[2]/3600;
+  if (Array.isArray(val)&&val.length===1) return dmsToDecimal(val[0]);
+  if (typeof val==='string') { const n=parseFloat(val); return isNaN(n)?null:n; }
   return null;
 }
 
-// Manual binary EXIF scan as last resort for tricky HEIC files
+async function parseGPS(file) {
+  try {
+    const p = await exifr.parse(file,{gps:true,tiff:true,exif:true,icc:false,iptc:false,xmp:false,translateValues:true,reviveValues:true,sanitize:true});
+    if (p?.latitude!=null&&p?.longitude!=null) {
+      const lat=dmsToDecimal(p.latitude), lng=dmsToDecimal(p.longitude);
+      if (typeof lat==='number'&&typeof lng==='number') return {lat,lng};
+    }
+    if (p) {
+      let lat=null,lng=null,latRef='N',lngRef='E';
+      for (const k of ['GPSLatitude','latitude','Latitude']) if(p[k]!=null){lat=p[k];break;}
+      for (const k of ['GPSLongitude','longitude','Longitude']) if(p[k]!=null){lng=p[k];break;}
+      for (const k of ['GPSLatitudeRef','latitudeRef']) if(p[k]!=null){latRef=p[k];break;}
+      for (const k of ['GPSLongitudeRef','longitudeRef']) if(p[k]!=null){lngRef=p[k];break;}
+      if (lat!=null&&lng!=null) {
+        lat=dmsToDecimal(lat); lng=dmsToDecimal(lng);
+        if(latRef==='S') lat=-Math.abs(lat); if(lngRef==='W') lng=-Math.abs(lng);
+        if(typeof lat==='number'&&typeof lng==='number') return {lat,lng};
+      }
+    }
+  } catch(e) { console.warn('exifr.parse:',e); }
+  try {
+    const g=await exifr.gps(file);
+    if(g?.latitude!=null&&g?.longitude!=null) return {lat:g.latitude,lng:g.longitude};
+  } catch(e) { console.warn('exifr.gps:',e); }
+  try { return await manualExifScan(file); } catch(e) { console.warn('manual:',e); }
+  return null;
+}
+
 async function manualExifScan(file) {
-  const buffer = await file.arrayBuffer();
-  const bytes = new Uint8Array(buffer);
-
-  // Look for EXIF marker in JPEG (FF E1) or GPS tag pattern
-  // GPS Latitude tag = 0x0002, GPS Longitude = 0x0004
-  // We look for the GPS IFD signature
-  const decoder = new TextDecoder('ascii', { fatal: false });
-
-  // Try to find "Exif" marker
-  for (let i = 0; i < Math.min(bytes.length - 4, 65536); i++) {
-    const chunk = decoder.decode(bytes.slice(i, i + 4));
-    if (chunk === 'Exif') {
-      // Found EXIF block, try parsing with DataView
-      try {
-        const view = new DataView(buffer, i + 6);
-        const littleEndian = view.getUint16(0) === 0x4949;
-        const ifdOffset = view.getUint32(4, littleEndian);
-        const entryCount = view.getUint16(ifdOffset, littleEndian);
-
-        let gpsIfdOffset = null;
-        for (let e = 0; e < entryCount; e++) {
-          const entryOffset = ifdOffset + 2 + e * 12;
-          const tag = view.getUint16(entryOffset, littleEndian);
-          if (tag === 0x8825) { // GPS IFD pointer
-            gpsIfdOffset = view.getUint32(entryOffset + 8, littleEndian);
-            break;
-          }
-        }
-
-        if (gpsIfdOffset === null) continue;
-
-        const gpsEntries = view.getUint16(gpsIfdOffset, littleEndian);
-        let latDMS = null, lngDMS = null, latRef = 'N', lngRef = 'E';
-
-        for (let e = 0; e < gpsEntries; e++) {
-          const entryOffset = gpsIfdOffset + 2 + e * 12;
-          const tag = view.getUint16(entryOffset, littleEndian);
-          const type = view.getUint16(entryOffset + 2, littleEndian);
-          const count = view.getUint32(entryOffset + 4, littleEndian);
-          const valOffset = view.getUint32(entryOffset + 8, littleEndian);
-
-          if (tag === 0x0001) { // GPSLatitudeRef
-            latRef = String.fromCharCode(view.getUint8(entryOffset + 8));
-          } else if (tag === 0x0002 && type === 5) { // GPSLatitude (rational)
-            latDMS = [
-              view.getUint32(valOffset, littleEndian) / view.getUint32(valOffset + 4, littleEndian),
-              view.getUint32(valOffset + 8, littleEndian) / view.getUint32(valOffset + 12, littleEndian),
-              view.getUint32(valOffset + 16, littleEndian) / view.getUint32(valOffset + 20, littleEndian)
-            ];
-          } else if (tag === 0x0003) { // GPSLongitudeRef
-            lngRef = String.fromCharCode(view.getUint8(entryOffset + 8));
-          } else if (tag === 0x0004 && type === 5) { // GPSLongitude (rational)
-            lngDMS = [
-              view.getUint32(valOffset, littleEndian) / view.getUint32(valOffset + 4, littleEndian),
-              view.getUint32(valOffset + 8, littleEndian) / view.getUint32(valOffset + 12, littleEndian),
-              view.getUint32(valOffset + 16, littleEndian) / view.getUint32(valOffset + 20, littleEndian)
-            ];
-          }
-        }
-
-        if (latDMS && lngDMS) {
-          let lat = latDMS[0] + latDMS[1]/60 + latDMS[2]/3600;
-          let lng = lngDMS[0] + lngDMS[1]/60 + lngDMS[2]/3600;
-          if (latRef === 'S') lat = -lat;
-          if (lngRef === 'W') lng = -lng;
-          if (lat !== 0 && lng !== 0) return { lat, lng };
-        }
-      } catch(e) { console.warn('DataView parse error:', e); }
-    }
+  const buffer=await file.arrayBuffer(), bytes=new Uint8Array(buffer);
+  const dec=new TextDecoder('ascii',{fatal:false});
+  for (let i=0;i<Math.min(bytes.length-4,131072);i++) {
+    if(dec.decode(bytes.slice(i,i+4))!=='Exif') continue;
+    try {
+      const view=new DataView(buffer,i+6), le=view.getUint16(0)===0x4949;
+      const ifdOff=view.getUint32(4,le), entries=view.getUint16(ifdOff,le);
+      let gpsOff=null;
+      for(let e=0;e<entries;e++){const o=ifdOff+2+e*12;if(view.getUint16(o,le)===0x8825){gpsOff=view.getUint32(o+8,le);break;}}
+      if(!gpsOff) continue;
+      const gEntries=view.getUint16(gpsOff,le);
+      let latDMS=null,lngDMS=null,latRef='N',lngRef='E';
+      for(let e=0;e<gEntries;e++){
+        const o=gpsOff+2+e*12,tag=view.getUint16(o,le),type=view.getUint16(o+2,le),vo=view.getUint32(o+8,le);
+        if(tag===0x0001) latRef=String.fromCharCode(view.getUint8(o+8));
+        else if(tag===0x0002&&type===5) latDMS=[view.getUint32(vo,le)/view.getUint32(vo+4,le),view.getUint32(vo+8,le)/view.getUint32(vo+12,le),view.getUint32(vo+16,le)/view.getUint32(vo+20,le)];
+        else if(tag===0x0003) lngRef=String.fromCharCode(view.getUint8(o+8));
+        else if(tag===0x0004&&type===5) lngDMS=[view.getUint32(vo,le)/view.getUint32(vo+4,le),view.getUint32(vo+8,le)/view.getUint32(vo+12,le),view.getUint32(vo+16,le)/view.getUint32(vo+20,le)];
+      }
+      if(latDMS&&lngDMS){
+        let lat=latDMS[0]+latDMS[1]/60+latDMS[2]/3600,lng=lngDMS[0]+lngDMS[1]/60+lngDMS[2]/3600;
+        if(latRef==='S') lat=-lat; if(lngRef==='W') lng=-lng;
+        if(lat!==0&&lng!==0) return {lat,lng};
+      }
+    } catch(e) {}
   }
   return null;
 }
 
-const photoInput = document.getElementById('photoInput');
-const uploadZone = document.getElementById('uploadZone');
-
-uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
-uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
-uploadZone.addEventListener('drop', e => {
-  e.preventDefault();
-  uploadZone.classList.remove('drag-over');
-  const file = e.dataTransfer.files[0];
-  if (file) processFile(file);
-});
-
-photoInput.addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (file) processFile(file);
-});
+const photoInput=document.getElementById('photoInput'), uploadZone=document.getElementById('uploadZone');
+uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('drag-over');});
+uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop',e=>{e.preventDefault();uploadZone.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)processFile(f);});
+photoInput.addEventListener('change',e=>{const f=e.target.files[0];if(f)processFile(f);});
 
 async function processFile(file) {
   setStatus(`Reading "${file.name}"…`, 'loading');
-  document.getElementById('photoCoords').textContent = 'Parsing GPS data…';
-  document.getElementById('distKm').textContent = '…';
-  document.getElementById('distMi').textContent = '';
-
+  showPhotoPreview(file);
+  document.getElementById('distKm').textContent='…';
   const result = await parseGPS(file);
-
-  if (!result) {
-    showNoGps();
-    const isHeic = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
-    const isPng = file.name.toLowerCase().endsWith('.png');
-    if (isPng) {
-      setStatus('PNGs from iPhone never contain GPS data. Use a JPEG.', 'error');
-    } else if (isHeic) {
-      setStatus('No GPS found in HEIC. Try sharing as JPEG from Photos app.', 'error');
-    } else {
-      setStatus('No GPS metadata found. Ensure Location Services are on.', 'error');
-    }
-    return;
-  }
-
+  if (!result) { showNoGps(file); return; }
   renderPhoto(result.lat, result.lng);
 }
 
 initMap();
-setStatus('Ready. Upload a photo with GPS.');
 </script>
 </body>
 </html>
