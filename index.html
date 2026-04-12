@@ -3,212 +3,130 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GeoGuesser Photo Distance</title>
+  <title>GeoGuesser</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Georgia', serif; background: #0d0f14; color: #e8e4dc; min-height: 100vh; display: flex; flex-direction: column; }
 
-    body {
-      font-family: 'Georgia', serif;
-      background: #0d0f14;
-      color: #e8e4dc;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+    header { padding: 1rem 1.5rem; border-bottom: 1px solid #1e2330; display: flex; align-items: baseline; gap: 1.5rem; flex-shrink: 0; }
+    header h1 { font-size: 1.35rem; font-weight: 400; letter-spacing: 0.04em; color: #f0ebe0; }
+    header p { font-size: 0.75rem; color: #4a5060; font-family: 'Courier New', monospace; }
 
-    header {
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid #1e2330;
-      display: flex;
-      align-items: baseline;
-      gap: 1.5rem;
-      flex-shrink: 0;
-    }
-    header h1 { font-size: 1.4rem; font-weight: 400; letter-spacing: 0.04em; color: #f0ebe0; }
-    header p { font-size: 0.78rem; color: #5a6070; font-family: 'Courier New', monospace; }
-
-    /* Three-column layout: sidebar | photo | map */
-    main {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 260px 1fr 1fr;
-      min-height: 0;
-      overflow: hidden;
-    }
+    main { flex: 1; display: grid; grid-template-columns: 280px 1fr 1fr; min-height: 0; overflow: hidden; }
 
     /* ── Sidebar ── */
-    .sidebar {
-      padding: 1.25rem;
-      border-right: 1px solid #1e2330;
-      display: flex;
-      flex-direction: column;
-      gap: 1.1rem;
-      overflow-y: auto;
-    }
+    .sidebar { padding: 1.1rem; border-right: 1px solid #1e2330; display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; }
 
-    .section-label {
-      font-family: 'Courier New', monospace;
-      font-size: 0.65rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      margin-bottom: 0.55rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .mono { font-family: 'Courier New', monospace; }
+    .sec-label { font-family: 'Courier New', monospace; font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: #3d4455; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px; }
 
-    .dot {
-      display: inline-block;
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
+    .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
     .dot.gold { background: #c8a96e; box-shadow: 0 0 0 3px #c8a96e33; }
     .dot.blue { background: #5a9fd4; box-shadow: 0 0 0 3px #5a9fd433; }
 
-    .loc-card {
-      border-radius: 8px;
-      padding: 0.9rem;
-      border: 1px solid;
+    /* Code input */
+    .code-row { display: flex; gap: 0.5rem; align-items: stretch; }
+    .code-input {
+      flex: 1; background: #0a0c12; border: 1px solid #2a3040; border-radius: 6px;
+      color: #f0ebe0; font-family: 'Courier New', monospace; font-size: 1.3rem;
+      letter-spacing: 0.12em; text-align: center; padding: 0.5rem 0.4rem;
+      text-transform: uppercase; outline: none; transition: border-color 0.2s;
     }
-    .loc-card.target { background: #100e0a; border-color: #c8a96e44; }
-    .loc-card.target .section-label { color: #c8a96e; }
-    .loc-card.photo { background: #090d14; border-color: #5a9fd444; }
-    .loc-card.photo .section-label { color: #5a9fd4; }
+    .code-input:focus { border-color: #c8a96e; }
+    .code-input::placeholder { color: #2a3040; font-size: 1rem; }
+    .code-btn {
+      background: #c8a96e22; border: 1px solid #c8a96e55; border-radius: 6px;
+      color: #c8a96e; font-family: 'Courier New', monospace; font-size: 0.7rem;
+      letter-spacing: 0.08em; padding: 0 0.8rem; cursor: pointer; transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .code-btn:hover { background: #c8a96e33; }
 
-    .loc-name { font-size: 0.95rem; color: #f0ebe0; margin-bottom: 0.35rem; }
-    .loc-coords { font-family: 'Courier New', monospace; font-size: 0.75rem; color: #6a7080; line-height: 1.75; }
+    .code-error { font-family: 'Courier New', monospace; font-size: 0.68rem; color: #a05050; min-height: 1rem; margin-top: 0.3rem; }
 
-    /* Upload zone — compact strip */
+    /* Target info card */
+    .target-card { background: #100e0a; border: 1px solid #c8a96e44; border-radius: 8px; padding: 0.85rem; }
+    .target-card .sec-label { color: #c8a96e; }
+    .target-name { font-size: 1rem; color: #f0ebe0; margin-bottom: 0.3rem; }
+    .target-code-badge {
+      display: inline-block; background: #c8a96e22; border: 1px solid #c8a96e44;
+      color: #c8a96e; font-family: 'Courier New', monospace; font-size: 0.7rem;
+      letter-spacing: 0.1em; padding: 2px 7px; border-radius: 4px; margin-bottom: 0.5rem;
+    }
+    .target-coords { font-family: 'Courier New', monospace; font-size: 0.73rem; color: #6a7080; line-height: 1.75; }
+
+    /* Photo location card */
+    .photo-card { background: #090d14; border: 1px solid #5a9fd444; border-radius: 8px; padding: 0.85rem; }
+    .photo-card .sec-label { color: #5a9fd4; }
+    .photo-coords { font-family: 'Courier New', monospace; font-size: 0.73rem; color: #a0b8cc; line-height: 1.75; }
+
+    /* Upload strip */
     .upload-zone {
-      border: 1px dashed #2a3040;
-      border-radius: 8px;
-      padding: 0.55rem 0.85rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-      position: relative;
-      background: #0f1218;
+      border: 1px dashed #2a3040; border-radius: 7px; padding: 0.5rem 0.8rem;
+      display: flex; align-items: center; gap: 0.55rem; cursor: pointer;
+      transition: border-color 0.2s, background 0.2s; position: relative; background: #0f1218;
     }
     .upload-zone:hover { border-color: #5a9fd4; background: #0a0e14; }
     .upload-zone.drag-over { border-color: #5a9fd4; }
     .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-    .upload-zone .icon { font-size: 1rem; color: #3d4455; flex-shrink: 0; }
-    .upload-zone strong { color: #8a9090; font-size: 0.78rem; font-weight: 400; white-space: nowrap; }
-    .upload-zone p { font-size: 0.66rem; color: #4a5060; line-height: 1.3; margin: 0; }
+    .upload-zone .icon { font-size: 0.95rem; color: #3d4455; flex-shrink: 0; }
+    .upload-zone strong { color: #8a9090; font-size: 0.75rem; font-weight: 400; white-space: nowrap; }
+    .upload-zone p { font-size: 0.63rem; color: #4a5060; line-height: 1.3; margin: 0; }
 
-    .tip-box {
-      border-left: 2px solid #c8a96e;
-      border-radius: 0 4px 4px 0;
-      padding: 0.5rem 0.75rem;
-      font-size: 0.68rem;
-      color: #5a6070;
-      line-height: 1.55;
-      font-family: 'Courier New', monospace;
-    }
+    .tip-box { border-left: 2px solid #c8a96e; padding: 0.45rem 0.7rem; font-size: 0.65rem; color: #4a5060; line-height: 1.55; font-family: 'Courier New', monospace; }
     .tip-box b { color: #c8a96e; font-weight: 400; }
 
-    .distance-display {
-      background: #0f1218;
-      border: 1px solid #2a3040;
-      border-radius: 8px;
-      padding: 0.9rem 1.1rem;
-      display: flex;
-      align-items: baseline;
-      gap: 0.6rem;
-    }
-    .dist-num { font-size: 2rem; font-weight: 400; color: #f0ebe0; letter-spacing: -0.02em; line-height: 1; }
+    /* Distance */
+    .dist-display { background: #0f1218; border: 1px solid #2a3040; border-radius: 8px; padding: 0.85rem 1rem; display: flex; align-items: baseline; gap: 0.55rem; }
+    .dist-num { font-size: 1.9rem; font-weight: 400; color: #f0ebe0; letter-spacing: -0.02em; line-height: 1; }
     .dist-meta { display: flex; flex-direction: column; gap: 2px; }
-    .dist-unit { font-family: 'Courier New', monospace; font-size: 0.62rem; letter-spacing: 0.12em; color: #5a6070; }
-    .dist-mi { font-family: 'Courier New', monospace; font-size: 0.68rem; color: #3d4455; }
+    .dist-unit { font-family: 'Courier New', monospace; font-size: 1rem; letter-spacing: 0.12em; color: #a0a8b0; }
+    .dist-mi { font-family: 'Courier New', monospace; font-size: 0.72rem; color: #5a6070; }
 
-    .status-msg { font-family: 'Courier New', monospace; font-size: 0.68rem; color: #5a6070; min-height: 1rem; }
+    .status-msg { font-family: 'Courier New', monospace; font-size: 0.66rem; color: #5a6070; min-height: 1rem; }
     .status-msg.error { color: #a05050; }
     .status-msg.success { color: #5a9a6a; }
     .status-msg.loading { color: #c8a96e; }
 
-    /* ── Photo panel — middle column, fully unconstrained ── */
-    #photo-panel {
-      border-right: 1px solid #1e2330;
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;        /* scrolls if photo is very tall */
-      background: #090d10;
-    }
+    /* ── Middle panel: target image on top, your photo below ── */
+    #photo-panel { border-right: 1px solid #1e2330; display: flex; flex-direction: column; overflow-y: auto; background: #080b0f; }
 
-    #photoPlaceholder {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 0.75rem;
-      color: #2a3040;
-      font-family: 'Courier New', monospace;
-      font-size: 0.75rem;
-      padding: 2rem;
-      text-align: center;
-    }
-    #photoPlaceholder .big-icon { font-size: 2.5rem; opacity: 0.4; }
+    .panel-half { flex: 1; display: flex; flex-direction: column; position: relative; min-height: 200px; }
+    .panel-half + .panel-half { border-top: 1px solid #1e2330; }
 
-    #photoPreviewWrap {
-      display: none;
-      position: relative;
-      flex-direction: column;
+    .panel-badge {
+      position: absolute; top: 8px; left: 8px; z-index: 2;
+      font-family: 'Courier New', monospace; font-size: 0.58rem; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 3px 8px; border-radius: 3px; font-weight: 600;
     }
-    /* The image is completely unconstrained — shows at its natural aspect ratio */
-    #photoPreview {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-    #photoPreviewBadge {
-      position: absolute;
-      top: 10px; left: 10px;
-      background: #5a9fd4;
-      color: #020810;
-      font-family: 'Courier New', monospace;
-      font-size: 0.6rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 3px 8px;
-      border-radius: 3px;
-      font-weight: 600;
-    }
+    .badge-gold { background: #c8a96e; color: #0a0800; }
+    .badge-blue { background: #5a9fd4; color: #020810; }
 
-    /* ── Map panel — right column ── */
+    .panel-placeholder {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 0.6rem; color: #2a3040;
+      font-family: 'Courier New', monospace; font-size: 0.7rem; padding: 1.5rem; text-align: center;
+    }
+    .panel-placeholder .big-icon { font-size: 2rem; opacity: 0.35; }
+
+    .panel-img { width: 100%; height: auto; display: block; }
+
+    /* ── Map ── */
     #map-container { position: relative; }
     #map { width: 100%; height: 100%; min-height: 400px; }
-
-    .leaflet-popup-content-wrapper {
-      background: #0d0f14 !important; color: #e8e4dc !important;
-      border: 1px solid #2a3040 !important; border-radius: 6px !important;
-      box-shadow: none !important; font-family: 'Courier New', monospace !important; font-size: 0.75rem !important;
-    }
+    .leaflet-popup-content-wrapper { background: #0d0f14 !important; color: #e8e4dc !important; border: 1px solid #2a3040 !important; border-radius: 6px !important; box-shadow: none !important; font-family: 'Courier New', monospace !important; font-size: 0.73rem !important; }
     .leaflet-popup-tip { background: #0d0f14 !important; }
     .leaflet-popup-content { margin: 10px 13px !important; line-height: 1.8 !important; }
+    #map-legend { position: absolute; bottom: 20px; left: 12px; z-index: 1000; background: #0d0f14ee; border: 1px solid #2a3040; border-radius: 6px; padding: 0.55rem 0.8rem; font-family: 'Courier New', monospace; font-size: 0.68rem; color: #8a9090; display: flex; flex-direction: column; gap: 5px; }
+    .legend-row { display: flex; align-items: center; gap: 7px; }
 
-    #map-legend {
-      position: absolute; bottom: 20px; left: 12px; z-index: 1000;
-      background: #0d0f14ee; border: 1px solid #2a3040; border-radius: 6px;
-      padding: 0.6rem 0.85rem; font-family: 'Courier New', monospace; font-size: 0.7rem;
-      color: #8a9090; display: flex; flex-direction: column; gap: 6px;
-    }
-    .legend-row { display: flex; align-items: center; gap: 8px; }
-
-    footer {
-      padding: 0.6rem 1.5rem; border-top: 1px solid #1e2330;
-      font-family: 'Courier New', monospace; font-size: 0.65rem; color: #2a3040;
-      display: flex; justify-content: space-between; flex-shrink: 0;
-    }
+    footer { padding: 0.55rem 1.5rem; border-top: 1px solid #1e2330; font-family: 'Courier New', monospace; font-size: 0.62rem; color: #2a3040; display: flex; justify-content: space-between; flex-shrink: 0; }
 
     @media (max-width: 900px) {
       main { grid-template-columns: 1fr; grid-template-rows: auto auto auto; overflow: visible; }
       .sidebar { border-right: none; border-bottom: 1px solid #1e2330; }
-      #photo-panel { border-right: none; border-bottom: 1px solid #1e2330; min-height: 200px; }
+      #photo-panel { border-right: none; border-bottom: 1px solid #1e2330; }
       #map { min-height: 350px; }
     }
   </style>
@@ -217,22 +135,35 @@
 
 <header>
   <h1>GeoGuesser</h1>
-  <p>Upload a photo → measure distance to target</p>
+  <p>Enter a target code → upload your photo → see the distance</p>
 </header>
 
 <main>
 
-  <!-- Sidebar: controls & info -->
+  <!-- ── Sidebar ── -->
   <aside class="sidebar">
 
-    <div class="loc-card target">
-      <div class="section-label"><span class="dot gold"></span>Target location</div>
-      <div class="loc-name">Statue of Liberty</div>
-      <div class="loc-coords">40.689249° N<br>74.044500° W</div>
+    <!-- Code input -->
+    <div>
+      <div class="sec-label">Target code</div>
+      <div class="code-row">
+        <input class="code-input" id="codeInput" maxlength="2" placeholder="A1" />
+        <button class="code-btn" id="codeBtn">Set target</button>
+      </div>
+      <div class="code-error" id="codeError"></div>
     </div>
 
-    <div>
-      <div class="section-label" style="color:#3d4455;">Upload your photo</div>
+    <!-- Target info (shown after code entry) -->
+    <div id="targetCard" class="target-card" style="display:none;">
+      <div class="sec-label"><span class="dot gold"></span>Target location</div>
+      <div class="target-code-badge" id="targetBadge">A1</div>
+      <div class="target-name" id="targetName">—</div>
+      <div class="target-coords" id="targetCoords">—</div>
+    </div>
+
+    <!-- Upload -->
+    <div id="uploadSection" style="display:none;">
+      <div class="sec-label" style="color:#3a4050;">Your photo</div>
       <div class="upload-zone" id="uploadZone">
         <input type="file" id="photoInput" accept="image/*,.heic,.heif" />
         <div class="icon">⊕</div>
@@ -241,20 +172,22 @@
           <p>JPEG or HEIC with GPS enabled</p>
         </div>
       </div>
-      <div class="tip-box" style="margin-top:0.5rem;">
+      <div class="tip-box" style="margin-top:0.45rem;">
         <b>Tip:</b> Use JPEG from Camera Roll. PNGs &amp; screenshots have no GPS.
       </div>
-      <div class="status-msg" id="statusMsg" style="margin-top:0.45rem;">Ready — upload a photo.</div>
+      <div class="status-msg" id="statusMsg" style="margin-top:0.4rem;">Upload a photo to compare.</div>
     </div>
 
-    <div class="loc-card photo" id="photoCard" style="display:none;">
-      <div class="section-label"><span class="dot blue"></span>Your photo location</div>
-      <div class="loc-coords" id="photoCoords" style="color:#a0b8cc;"></div>
+    <!-- Photo coords (hidden until GPS found) -->
+    <div class="photo-card" id="photoCard" style="display:none;">
+      <div class="sec-label"><span class="dot blue"></span>Your photo location</div>
+      <div class="photo-coords" id="photoCoords"></div>
     </div>
 
+    <!-- Distance (hidden until GPS found) -->
     <div id="distanceWrap" style="display:none;">
-      <div class="section-label" style="color:#3d4455;">Distance to target</div>
-      <div class="distance-display">
+      <div class="sec-label" style="color:#3a4050;">Distance to target</div>
+      <div class="dist-display">
         <div class="dist-num" id="distKm">—</div>
         <div class="dist-meta">
           <div class="dist-unit" id="distUnit">KM</div>
@@ -265,24 +198,37 @@
 
   </aside>
 
-  <!-- Photo panel: full uncropped image -->
+  <!-- ── Middle: target image (top) + your photo (bottom) ── -->
   <div id="photo-panel">
-    <div id="photoPlaceholder">
-      <div class="big-icon">⬚</div>
-      <span>Your photo will appear here</span>
+
+    <!-- Top half: target image -->
+    <div class="panel-half" id="targetImgHalf">
+      <div class="panel-placeholder" id="targetImgPlaceholder">
+        <div class="big-icon">⬚</div>
+        <span>Enter a target code to see the target photo</span>
+      </div>
+      <div class="panel-badge badge-gold" id="targetImgBadge" style="display:none;">Target</div>
+      <img class="panel-img" id="targetImg" alt="Target location" style="display:none;" />
     </div>
-    <div id="photoPreviewWrap">
-      <img id="photoPreview" alt="Uploaded photo" />
-      <div id="photoPreviewBadge">Your photo</div>
+
+    <!-- Bottom half: your uploaded photo -->
+    <div class="panel-half" id="yourImgHalf">
+      <div class="panel-placeholder" id="yourImgPlaceholder">
+        <div class="big-icon">⬚</div>
+        <span>Your photo will appear here</span>
+      </div>
+      <div class="panel-badge badge-blue" id="yourImgBadge" style="display:none;">Your photo</div>
+      <img class="panel-img" id="photoPreview" alt="Your photo" style="display:none;" />
     </div>
+
   </div>
 
-  <!-- Map panel -->
+  <!-- ── Map ── -->
   <div id="map-container">
     <div id="map"></div>
     <div id="map-legend">
-      <div class="legend-row"><span class="dot gold" style="width:11px;height:11px;"></span>Target — Statue of Liberty</div>
-      <div class="legend-row" id="legendPhotoRow" style="display:none;"><span class="dot blue" style="width:11px;height:11px;"></span>Your photo location</div>
+      <div class="legend-row" id="legendTargetRow" style="display:none;"><span class="dot gold" style="width:10px;height:10px;"></span><span id="legendTargetLabel">Target</span></div>
+      <div class="legend-row" id="legendPhotoRow" style="display:none;"><span class="dot blue" style="width:10px;height:10px;"></span>Your photo location</div>
     </div>
   </div>
 
@@ -296,8 +242,59 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.umd.min.js"></script>
 <script>
-const TARGET = { name: 'Statue of Liberty', lat: 40.689249, lng: -74.044500 };
+
+/* ═══════════════════════════════════════════════════════
+   EDIT THIS SECTION TO ADD YOUR TARGETS
+   ═══════════════════════════════════════════════════════
+
+   HOW TO ADD COORDINATES:
+   For each entry set lat (latitude) and lng (longitude).
+   Positive lat = North, negative = South.
+   Positive lng = East, negative = West.
+
+   HOW TO ADD TARGET PHOTOS:
+   1. Save your target photos in the same folder as this HTML file.
+   2. Name them exactly: A1.jpg, A2.jpg, A3.jpg, A4.jpg, A5.jpg
+                         B1.jpg, B2.jpg ... C5.jpg
+      (You can also use .png or .jpeg — just update the img value below)
+   3. Open this HTML file from that folder in your browser.
+
+   If you want to use a different filename or path, change the
+   "img" value. For example: img: "photos/group-a/location1.jpg"
+
+   Set name to a label you want displayed (e.g. the place name).
+   ═══════════════════════════════════════════════════════ */
+
+const TARGETS = {
+  A: [
+    { name: 'Location A1', lat: 22.4100389,  lng: 114.1258228, img: 'image/A1.png' },
+    { name: 'Location A2', lat: 48.858844,  lng:   2.294351, img: 'A2.jpg' },
+    { name: 'Location A3', lat: 35.689487,  lng: 139.691711, img: 'A3.jpg' },
+    { name: 'Location A4', lat: 51.500729,  lng:  -0.124625, img: 'A4.jpg' },
+    { name: 'Location A5', lat: -33.868820, lng: 151.209290, img: 'A5.jpg' },
+  ],
+  B: [
+    { name: 'Location B1', lat: 27.175015,  lng:  78.042155, img: 'B1.jpg' },
+    { name: 'Location B2', lat: 41.890210,  lng:  12.492231, img: 'B2.jpg' },
+    { name: 'Location B3', lat: 29.979235,  lng:  31.134202, img: 'B3.jpg' },
+    { name: 'Location B4', lat: 37.971534,  lng:  23.726619, img: 'B4.jpg' },
+    { name: 'Location B5', lat: -13.163141, lng: -72.545441, img: 'B5.jpg' },
+  ],
+  C: [
+    { name: 'Location C1', lat: 43.722952,  lng:  10.396597, img: 'C1.jpg' },
+    { name: 'Location C2', lat: 25.197197,  lng:  55.274376, img: 'C2.jpg' },
+    { name: 'Location C3', lat: 22.302711,  lng: 114.177216, img: 'C3.jpg' },
+    { name: 'Location C4', lat: 55.751244,  lng:  37.618423, img: 'C4.jpg' },
+    { name: 'Location C5', lat: 19.432608,  lng: -99.133209, img: 'C5.jpg' },
+  ],
+};
+
+/* ═══════════════════════════════════════════════════════
+   END OF EDITABLE SECTION
+   ═══════════════════════════════════════════════════════ */
+
 let map, targetMarker, photoMarker, distLine;
+let currentTarget = null;
 
 function mkIcon(color, size) {
   return L.divIcon({
@@ -308,13 +305,10 @@ function mkIcon(color, size) {
 }
 
 function initMap() {
-  map = L.map('map', { center: [TARGET.lat, TARGET.lng], zoom: 4, minZoom: 2 });
+  map = L.map('map', { center: [20, 10], zoom: 2, minZoom: 2 });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19, attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
-  targetMarker = L.marker([TARGET.lat, TARGET.lng], { icon: mkIcon('#c8a96e', 18) })
-    .addTo(map)
-    .bindPopup(`<b style="color:#c8a96e;">TARGET</b><br>${TARGET.name}<br>${TARGET.lat.toFixed(6)}° N, ${Math.abs(TARGET.lng).toFixed(6)}° W`);
 }
 
 function setStatus(msg, type='') {
@@ -328,17 +322,95 @@ function haversineKm(lat1,lng1,lat2,lng2) {
   return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 
+function parseCode(raw) {
+  const code = raw.trim().toUpperCase();
+  if (!/^[ABC][1-5]$/.test(code)) return null;
+  const group = code[0];
+  const idx = parseInt(code[1]) - 1;
+  return TARGETS[group]?.[idx] ? { target: TARGETS[group][idx], code } : null;
+}
+
+function setTarget(raw) {
+  const parsed = parseCode(raw);
+  const errEl = document.getElementById('codeError');
+
+  if (!parsed) {
+    errEl.textContent = 'Invalid code. Use A1–A5, B1–B5, or C1–C5.';
+    return;
+  }
+  errEl.textContent = '';
+  currentTarget = parsed.target;
+  const { target, code } = parsed;
+
+  // Update sidebar
+  document.getElementById('targetBadge').textContent = code;
+  document.getElementById('targetName').textContent = target.name;
+  const latStr = `${Math.abs(target.lat).toFixed(6)}° ${target.lat>=0?'N':'S'}`;
+  const lngStr = `${Math.abs(target.lng).toFixed(6)}° ${target.lng>=0?'E':'W'}`;
+  document.getElementById('targetCoords').innerHTML = `${latStr}<br>${lngStr}`;
+  document.getElementById('targetCard').style.display = 'block';
+  document.getElementById('uploadSection').style.display = 'block';
+
+  // Target image
+  const targetImg = document.getElementById('targetImg');
+  const targetPlaceholder = document.getElementById('targetImgPlaceholder');
+  const targetBadgeEl = document.getElementById('targetImgBadge');
+  targetImg.style.display = 'none';
+  targetBadgeEl.style.display = 'none';
+  targetPlaceholder.style.display = 'flex';
+  targetImg.onload = () => {
+    targetPlaceholder.style.display = 'none';
+    targetImg.style.display = 'block';
+    targetBadgeEl.textContent = `Target — ${code}`;
+    targetBadgeEl.style.display = 'block';
+  };
+  targetImg.onerror = () => {
+    targetPlaceholder.querySelector('span').textContent = `No image found for ${code} — place ${target.img} next to this HTML file`;
+    targetPlaceholder.style.display = 'flex';
+    targetImg.style.display = 'none';
+    targetBadgeEl.style.display = 'none';
+  };
+  targetImg.src = target.img;
+
+  // Map marker
+  if (targetMarker) map.removeLayer(targetMarker);
+  targetMarker = L.marker([target.lat, target.lng], { icon: mkIcon('#c8a96e', 18) })
+    .addTo(map)
+    .bindPopup(`<b style="color:#c8a96e;">TARGET ${code}</b><br>${target.name}<br>${latStr}<br>${lngStr}`);
+
+  document.getElementById('legendTargetLabel').textContent = `Target ${code} — ${target.name}`;
+  document.getElementById('legendTargetRow').style.display = 'flex';
+  map.setView([target.lat, target.lng], 8);
+
+  // Reset photo state
+  resetPhotoState();
+}
+
+function resetPhotoState() {
+  document.getElementById('photoCard').style.display = 'none';
+  document.getElementById('distanceWrap').style.display = 'none';
+  document.getElementById('legendPhotoRow').style.display = 'none';
+  document.getElementById('yourImgPlaceholder').style.display = 'flex';
+  document.getElementById('photoPreview').style.display = 'none';
+  document.getElementById('yourImgBadge').style.display = 'none';
+  if (photoMarker) { map.removeLayer(photoMarker); photoMarker = null; }
+  if (distLine) { map.removeLayer(distLine); distLine = null; }
+  if (window.distLabel) { map.removeLayer(window.distLabel); window.distLabel = null; }
+  setStatus('Upload a photo to compare.');
+}
+
 function showPhotoPreview(file) {
   const url = URL.createObjectURL(file);
   const img = document.getElementById('photoPreview');
   img.onload = () => URL.revokeObjectURL(url);
   img.src = url;
-  document.getElementById('photoPlaceholder').style.display = 'none';
-  const wrap = document.getElementById('photoPreviewWrap');
-  wrap.style.display = 'flex';
+  document.getElementById('yourImgPlaceholder').style.display = 'none';
+  img.style.display = 'block';
+  document.getElementById('yourImgBadge').style.display = 'block';
 }
 
 function renderPhoto(lat, lng) {
+  if (!currentTarget) return;
   const latStr = `${Math.abs(lat).toFixed(6)}° ${lat>=0?'N':'S'}`;
   const lngStr = `${Math.abs(lng).toFixed(6)}° ${lng>=0?'E':'W'}`;
   document.getElementById('photoCoords').innerHTML = `${latStr}<br>${lngStr}`;
@@ -350,10 +422,25 @@ function renderPhoto(lat, lng) {
     .bindPopup(`<b style="color:#5a9fd4;">YOUR PHOTO</b><br>${latStr}<br>${lngStr}`);
   photoMarker.openPopup();
 
-  if (distLine) distLine.setLatLngs([[TARGET.lat,TARGET.lng],[lat,lng]]);
-  else distLine = L.polyline([[TARGET.lat,TARGET.lng],[lat,lng]], { color:'#c8a96e', weight:2, opacity:0.65, dashArray:'7,5' }).addTo(map);
+  const t = currentTarget;
+  if (distLine) { distLine.setLatLngs([[t.lat,t.lng],[lat,lng]]); if (window.distLabel) { map.removeLayer(window.distLabel); window.distLabel = null; } }
+  else distLine = L.polyline([[t.lat,t.lng],[lat,lng]], { color:'#ffffff', weight:3, opacity:0.9, dashArray:'10,7' }).addTo(map);
 
-  const km = haversineKm(TARGET.lat, TARGET.lng, lat, lng);
+  const km = haversineKm(t.lat, t.lng, lat, lng);
+
+  // Mid-line distance label
+  const midLat = (t.lat + lat) / 2;
+  const midLng = (t.lng + lng) / 2;
+  const labelText = km < 1 ? `${(km*1000).toFixed(0)} m` : `${km.toFixed(1)} km`;
+  if (window.distLabel) map.removeLayer(window.distLabel);
+  window.distLabel = L.marker([midLat, midLng], {
+    icon: L.divIcon({
+      className: '',
+      html: `<div style="background:#0d0f14;border:1.5px solid #ffffff55;color:#ffffff;font-family:'Courier New',monospace;font-size:13px;font-weight:600;padding:4px 10px;border-radius:20px;white-space:nowrap;letter-spacing:0.04em;box-shadow:0 2px 8px #00000088;">${labelText}</div>`,
+      iconAnchor: [40, 14]
+    }),
+    interactive: false
+  }).addTo(map);
   if (km < 1) {
     document.getElementById('distKm').textContent = (km*1000).toFixed(0);
     document.getElementById('distUnit').textContent = 'METRES';
@@ -365,7 +452,7 @@ function renderPhoto(lat, lng) {
   }
   document.getElementById('distanceWrap').style.display = 'block';
   document.getElementById('legendPhotoRow').style.display = 'flex';
-  map.fitBounds(L.latLngBounds([[TARGET.lat,TARGET.lng],[lat,lng]]).pad(0.22));
+  map.fitBounds(L.latLngBounds([[t.lat,t.lng],[lat,lng]]).pad(0.22));
   setStatus('GPS found — locations plotted.', 'success');
 }
 
@@ -375,6 +462,7 @@ function showNoGps(file) {
   document.getElementById('legendPhotoRow').style.display = 'none';
   if (photoMarker) { map.removeLayer(photoMarker); photoMarker = null; }
   if (distLine) { map.removeLayer(distLine); distLine = null; }
+  if (window.distLabel) { map.removeLayer(window.distLabel); window.distLabel = null; }
   const n = (file.name||'').toLowerCase();
   if (n.endsWith('.png')) setStatus('PNGs have no GPS. Share as JPEG from Photos.', 'error');
   else if (n.endsWith('.heic')||n.endsWith('.heif')) setStatus('No GPS in HEIC. Try exporting as JPEG.', 'error');
@@ -408,12 +496,12 @@ async function parseGPS(file) {
         if(typeof lat==='number'&&typeof lng==='number') return {lat,lng};
       }
     }
-  } catch(e) { console.warn('exifr.parse:',e); }
+  } catch(e) {}
   try {
     const g=await exifr.gps(file);
     if(g?.latitude!=null&&g?.longitude!=null) return {lat:g.latitude,lng:g.longitude};
-  } catch(e) { console.warn('exifr.gps:',e); }
-  try { return await manualExifScan(file); } catch(e) { console.warn('manual:',e); }
+  } catch(e) {}
+  try { return await manualExifScan(file); } catch(e) {}
   return null;
 }
 
@@ -447,16 +535,25 @@ async function manualExifScan(file) {
   return null;
 }
 
-const photoInput=document.getElementById('photoInput'), uploadZone=document.getElementById('uploadZone');
-uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('drag-over');});
-uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('drag-over'));
-uploadZone.addEventListener('drop',e=>{e.preventDefault();uploadZone.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)processFile(f);});
-photoInput.addEventListener('change',e=>{const f=e.target.files[0];if(f)processFile(f);});
+// Events
+document.getElementById('codeBtn').addEventListener('click', () => {
+  setTarget(document.getElementById('codeInput').value);
+});
+document.getElementById('codeInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') setTarget(e.target.value);
+});
+
+const uploadZone = document.getElementById('uploadZone');
+const photoInput = document.getElementById('photoInput');
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('drag-over'); const f=e.dataTransfer.files[0]; if(f) processFile(f); });
+photoInput.addEventListener('change', e => { const f=e.target.files[0]; if(f) processFile(f); });
 
 async function processFile(file) {
+  if (!currentTarget) { setStatus('Set a target code first.', 'error'); return; }
   setStatus(`Reading "${file.name}"…`, 'loading');
   showPhotoPreview(file);
-  document.getElementById('distKm').textContent='…';
   const result = await parseGPS(file);
   if (!result) { showNoGps(file); return; }
   renderPhoto(result.lat, result.lng);
