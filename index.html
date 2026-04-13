@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AYPF GeoGuesser</title>
+  <title>GeoGuesser</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -134,7 +134,7 @@
 <body>
 
 <header>
-  <h1>AYPF GeoGuesser</h1>
+  <h1>GeoGuesser</h1>
   <p>Enter a target code → upload your photo → see the distance</p>
 </header>
 
@@ -424,7 +424,7 @@ function renderPhoto(lat, lng) {
 
   const t = currentTarget;
   if (distLine) { distLine.setLatLngs([[t.lat,t.lng],[lat,lng]]); if (window.distLabel) { map.removeLayer(window.distLabel); window.distLabel = null; } }
-  else distLine = L.polyline([[t.lat,t.lng],[lat,lng]], { color:'#ffffff', weight:3, opacity:0.9, dashArray:'10,7' }).addTo(map);
+  else distLine = L.polyline([[t.lat,t.lng],[lat,lng]], { color:'#000000', weight:3, opacity:0.95, dashArray:'10,7' }).addTo(map);
 
   const km = haversineKm(t.lat, t.lng, lat, lng);
 
@@ -436,8 +436,9 @@ function renderPhoto(lat, lng) {
   window.distLabel = L.marker([midLat, midLng], {
     icon: L.divIcon({
       className: '',
-      html: `<div style="background:#0d0f14;border:1.5px solid #ffffff55;color:#ffffff;font-family:'Courier New',monospace;font-size:13px;font-weight:600;padding:4px 10px;border-radius:20px;white-space:nowrap;letter-spacing:0.04em;box-shadow:0 2px 8px #00000088;">${labelText}</div>`,
-      iconAnchor: [40, 14]
+      html: `<div style="display:inline-block;background:#0d0f14;border:1.5px solid rgba(255,255,255,0.4);color:#ffffff;font-family:'Courier New',monospace;font-size:13px;font-weight:600;padding:5px 12px;border-radius:999px;white-space:nowrap;letter-spacing:0.04em;box-shadow:0 2px 10px rgba(0,0,0,0.7);transform:translate(-50%,-50%);">${labelText}</div>`,
+      iconSize: [0, 0],
+      iconAnchor: [0, 0]
     }),
     interactive: false
   }).addTo(map);
